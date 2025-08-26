@@ -6,7 +6,7 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-abstract class UserController
+class UserController
 {
     public function signUp(Request $request): JsonResponse {
         $request->validate([
@@ -22,7 +22,11 @@ abstract class UserController
             'password' => bcrypt($request->password),
         ]);
 
-        $token = $user->create_token()->plainTextToken;
+        // TODO: create inventory record
+
+        // Not really sure what to call the token,
+        // I'll just call it "token".
+        $token = $user->createToken('token')->plainTextToken;
 
         return response()->json([
             'user' => [
