@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Inventory;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -22,7 +23,9 @@ class UserController
             'password' => bcrypt($request->password),
         ]);
 
-        // TODO: create inventory record
+        Inventory::create([
+            'user_id' => $user->id,
+        ]);
 
         // Not really sure what to call the token,
         // I'll just call it "token".
