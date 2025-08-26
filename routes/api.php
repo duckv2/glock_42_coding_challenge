@@ -1,6 +1,8 @@
 <?php
 
 // use Illuminate\Http\Request;
+
+use App\Http\Controllers\GunController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 
@@ -12,7 +14,7 @@ Route::post('/signup', [UserController::class, 'signUp']);
 
 Route::post('/login', [UserController::class, 'login']);
 
-Route::post('/gun', function () {});
+Route::post('/gun', [GunController::class, 'store'])->middleware('auth:sanctum');
 
 Route::get('/gun', function () {});
 
