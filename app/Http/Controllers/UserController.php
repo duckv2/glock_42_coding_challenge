@@ -6,6 +6,7 @@ use App\Models\Inventory;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class UserController
 {
@@ -18,8 +19,8 @@ class UserController
         ]);
 
         $user = User::create([
-            'email' => $request->name,
-            'name' => $request->email,
+            'email' => $request->email,
+            'name' => $request->name,
             'password' => bcrypt($request->password),
         ]);
 
@@ -37,6 +38,32 @@ class UserController
                 'name' => $user->email
             ],
             'token' => $token,
+        ]);
+    }
+
+    public function login(Request $request): JsonResponse {
+        $request->validate([
+            'email' => 'required',
+            'password' => 'required'
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+        $token = $user->createToken('token')->plainTextToken;
+
+        if ($user && Hash::check($request->password, $user->password)) {
+            return response()->json([
+                'user' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                ],
+                'token' => $token
+            ]);
+        }
+
+        return response()->json([
+            'code' => 401,
+            'message' => "You shall not pass."
         ]);
     }
 }
