@@ -11,9 +11,14 @@ class GunController
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $user = $request->user();
+        $inventory = Inventory::where('user_id', $user->id)->first();
+
+        $guns = Gun::where('inventory_id', $inventory->id)->get();
+
+        return response()->json([...$guns]);
     }
 
     public function store(Request $request)
