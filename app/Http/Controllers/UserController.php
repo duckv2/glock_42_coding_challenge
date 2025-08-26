@@ -2,11 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Inventory;
-use App\Models\User;
+use App\Services\UserAuthService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 
 class UserController
 {
@@ -18,27 +16,21 @@ class UserController
             'password_confirmation' => 'required'
         ]);
 
-        $user = User::create([
+        if ($request->password != $request->password_confirmation) {
+            return response()->json([
+                'code' => 400,
+                'message' => 'Password does not match the password confirmation.'
+            ]);
+        }
+
+        $authService = new UserAuthService();
+        $authResponse = $authService->signUp([
             'email' => $request->email,
             'name' => $request->name,
             'password' => bcrypt($request->password),
         ]);
 
-        Inventory::create([
-            'user_id' => $user->id,
-        ]);
-
-        // Not really sure what to call the token,
-        // I'll just call it "token".
-        $token = $user->createToken('token')->plainTextToken;
-
-        return response()->json([
-            'user' => [
-                'id' => $user->id,
-                'name' => $user->email
-            ],
-            'token' => $token,
-        ]);
+        return response()->json($authResponse);
     }
 
     public function login(Request $request): JsonResponse {
@@ -47,18 +39,11 @@ class UserController
             'password' => 'required'
         ]);
 
-        $user = User::where('email', $request->email)->first();
-        $token = $user->createToken('token')->plainTextToken;
+        $authService = new UserAuthService();
 
-        if ($user && Hash::check($request->password, $user->password)) {
-            return response()->json([
-                'user' => [
-                    'id' => $user->id,
-                    'name' => $user->name,
-                    'email' => $user->email,
-                ],
-                'token' => $token
-            ]);
+        if ($authService->credentialsValid($request->email, $request->password)) {
+            $authResponse = $authService->login($request->email);
+            return response()->json($authResponse);
         }
 
         return response()->json([
