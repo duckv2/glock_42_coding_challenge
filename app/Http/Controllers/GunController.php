@@ -53,9 +53,26 @@ class GunController
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Request $request, int $id)
     {
-        //
+        $user = $request->user();
+        $inventory = Inventory::where('user_id', $user->id)->first();
+        $gun = Gun::where('id', $id)->first();
+
+        // Check if the gun exists and if the user owns the gun
+        if ($gun && $gun->inventory_id == $inventory->id) {
+            return response()->json([
+                'id' => $gun->id,
+                'caliber' => $gun->caliber,
+                'name' => $gun->name,
+                'serial_number' => $gun->serial_number
+            ]);
+        }
+
+        return response()->json([
+            'code' => 400,
+            'message' => 'Invalid gun id.'
+        ]);
     }
 
     /**

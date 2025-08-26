@@ -18,7 +18,7 @@ Route::post('/gun', [GunController::class, 'store'])->middleware('auth:sanctum')
 
 Route::get('/gun', [GunController::class, 'index'])->middleware('auth:sanctum');
 
-Route::get('/gun/{id}', function () {});
+Route::get('/gun/{id}', [GunController::class, 'show'])->middleware('auth:sanctum');
 
 Route::put('/gun/{id}', function () {});
 
