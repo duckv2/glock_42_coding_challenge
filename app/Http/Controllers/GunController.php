@@ -80,7 +80,38 @@ class GunController
      */
     public function update(Request $request, string $id)
     {
-        //
+        $request->validate([
+            'caliber' => 'required',
+            'name' => 'required',
+            'serial_number' => 'required'
+        ]);
+
+        $user = $request->user();
+        $inventory = Inventory::where('user_id', $user->id)->first();
+        $gun = Gun::where('id', $id)->first();
+
+        // Check if the gun exists and if the user owns the gun
+        if ($gun && $gun->inventory_id == $inventory->id) {
+            $gun->update([
+                'caliber' => $request->caliber,
+                'name' => $request->name,
+                'serial_number' => $request->serial_number
+            ]);
+
+            return response()->json([
+                'id' => $gun->id,
+                'inventory_id' => $gun->inventory_id,
+                'caliber' => $gun->caliber,
+                'name' => $gun->name,
+                'serial_number' => $gun->serial_number,
+                'updated_at' => $gun->updated_at
+            ]);
+        }
+
+        return response()->json([
+            'code' => 400,
+            'message' => 'Invalid gun id.'
+        ]);
     }
 
     /**

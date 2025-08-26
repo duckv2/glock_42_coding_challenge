@@ -20,6 +20,6 @@ Route::get('/gun', [GunController::class, 'index'])->middleware('auth:sanctum');
 
 Route::get('/gun/{id}', [GunController::class, 'show'])->middleware('auth:sanctum');
 
-Route::put('/gun/{id}', function () {});
+Route::put('/gun/{id}', [GunController::class, 'update'])->middleware('auth:sanctum');
 
 Route::delete('/gun/{id}', function () {});
