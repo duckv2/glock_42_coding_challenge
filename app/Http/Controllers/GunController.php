@@ -3,15 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\Gun;
-use App\Models\Inventory;
 use Illuminate\Http\Request;
+use App\Services\UserService;
 
 class GunController
 {
     public function index(Request $request)
     {
-        $user = $request->user();
-        $inventory = Inventory::where('user_id', $user->id)->first();
+        $userService = new UserService($request->user());
+        $inventory = $userService->getInventory();
 
         $guns = Gun::where('inventory_id', $inventory->id)->get();
 
@@ -26,8 +26,8 @@ class GunController
             'serial_number' => 'required'
         ]);
 
-        $user = $request->user();
-        $inventory = Inventory::where('user_id', $user->id)->first();
+        $userService = new UserService($request->user());
+        $inventory = $userService->getInventory();
 
         $gun = Gun::create([
             'inventory_id' => $inventory->id,
@@ -49,12 +49,11 @@ class GunController
 
     public function show(Request $request, int $id)
     {
-        $user = $request->user();
-        $inventory = Inventory::where('user_id', $user->id)->first();
+        $userService = new UserService($request->user());
         $gun = Gun::where('id', $id)->first();
 
         // Check if the gun exists and if the user owns the gun
-        if ($gun && $gun->inventory_id == $inventory->id) {
+        if ($gun && $userService->userOwnsGun($gun)) {
             return response()->json([
                 'id' => $gun->id,
                 'caliber' => $gun->caliber,
@@ -77,12 +76,11 @@ class GunController
             'serial_number' => 'required'
         ]);
 
-        $user = $request->user();
-        $inventory = Inventory::where('user_id', $user->id)->first();
+        $userService = new UserService($request->user());
         $gun = Gun::where('id', $id)->first();
 
         // Check if the gun exists and if the user owns the gun
-        if ($gun && $gun->inventory_id == $inventory->id) {
+        if ($gun && $userService->userOwnsGun($gun)) {
             $gun->update([
                 'caliber' => $request->caliber,
                 'name' => $request->name,
@@ -107,12 +105,11 @@ class GunController
 
     public function destroy(Request $request, int $id)
     {
-        $user = $request->user();
-        $inventory = Inventory::where('user_id', $user->id)->first();
+        $userService = new UserService($request->user());
         $gun = Gun::where('id', $id)->first();
 
         // Check if the gun exists and if the user owns the gun
-        if ($gun && $gun->inventory_id == $inventory->id) {
+        if ($gun && $userService->userOwnsGun($gun)) {
             $gun->delete();
 
             return response()->json([
