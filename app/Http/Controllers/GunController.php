@@ -8,9 +8,6 @@ use Illuminate\Http\Request;
 
 class GunController
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index(Request $request)
     {
         $user = $request->user();
@@ -50,9 +47,6 @@ class GunController
         ]);
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Request $request, int $id)
     {
         $user = $request->user();
@@ -75,9 +69,6 @@ class GunController
         ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
     {
         $request->validate([
@@ -114,11 +105,24 @@ class GunController
         ]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy(Request $request, int $id)
     {
-        //
+        $user = $request->user();
+        $inventory = Inventory::where('user_id', $user->id)->first();
+        $gun = Gun::where('id', $id)->first();
+
+        // Check if the gun exists and if the user owns the gun
+        if ($gun && $gun->inventory_id == $inventory->id) {
+            $gun->delete();
+
+            return response()->json([
+                'message' => 'Gun deleted successfully.'
+            ]);
+        }
+
+        return response()->json([
+            'code' => 400,
+            'message' => 'Invalid gun id.'
+        ]);
     }
 }
