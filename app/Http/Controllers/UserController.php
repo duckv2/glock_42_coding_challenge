@@ -1,12 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Data\LoginData;
 use App\Data\SignupData;
+use App\Services\AccountService;
 use App\Services\UserAuthService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class UserController
 {
@@ -35,6 +38,16 @@ class UserController
         return response()->json([
             'code' => 401,
             'message' => "You shall not pass."
+        ]);
+    }
+
+    public function deleteAccount(): JsonResponse {
+        $accountService = new AccountService(Auth::user());
+        $accountService->deleteAccount();
+
+        return response()->json([
+            'code' => 200,
+            'message' => 'Account deleted successfully.'
         ]);
     }
 }

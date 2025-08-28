@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Http\Controllers\GunController;
 use App\Http\Controllers\InventoryController;
 use Illuminate\Support\Facades\Route;
@@ -7,6 +9,7 @@ use App\Http\Controllers\UserController;
 
 Route::post('/signup', [UserController::class, 'signUp']);
 Route::post('/login', [UserController::class, 'login']);
+Route::delete('/account', [UserController::class, 'deleteAccount'])->middleware('auth:sanctum');
 
 
 Route::post('/gun', [GunController::class, 'store'])->middleware('auth:sanctum');
