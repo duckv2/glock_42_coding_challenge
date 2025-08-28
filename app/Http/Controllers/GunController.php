@@ -1,9 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
+use App\Data\GunData;
 use App\Services\GunService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class GunController
 {
@@ -14,22 +18,12 @@ class GunController
         return response()->json($gunService->getUserGuns());
     }
 
-    public function store(Request $request)
+    public function store(GunData $gunData)
     {
-        $request->validate([
-            'caliber' => 'required',
-            'name' => 'required',
-            'serial_number' => 'required'
-        ]);
+        $gunService = new GunService(Auth::user());
+        $gunResponse = $gunService->addGun($gunData);
 
-        $gunService = new GunService($request->user());
-        $gunData = $gunService->addGun([
-            'name' => $request->name,
-            'caliber' => $request->caliber,
-            'serial_number' => $request->serial_number
-        ]);
-
-        return response()->json($gunData);
+        return response()->json($gunResponse);
     }
 
     public function show(Request $request, int $id)
@@ -46,24 +40,14 @@ class GunController
         ]);
     }
 
-    public function update(Request $request, string $id)
+    public function update(GunData $gunData, int $id)
     {
-        $request->validate([
-            'caliber' => 'required',
-            'name' => 'required',
-            'serial_number' => 'required'
-        ]);
-
-        $gunService = new GunService($request->user());
+        $gunService = new GunService(Auth::user());
 
         if ($gunService->userHasGun($id)) {
-            $gunData = $gunService->updateGun($id, [
-                'caliber' => $request->caliber,
-                'name' => $request->name,
-                'serial_number' => $request->serial_number
-            ]);
+            $gunResponse = $gunService->updateGun($id, $gunData);
 
-            return response()->json($gunData);
+            return response()->json($gunResponse);
         }
 
         return response()->json([

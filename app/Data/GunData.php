@@ -1,0 +1,16 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Data;
+
+use Spatie\LaravelData\Data;
+
+class GunData extends Data
+{
+    public function __construct(
+        public string $caliber,
+        public string $name,
+        public string $serial_number
+    ) {}
+}

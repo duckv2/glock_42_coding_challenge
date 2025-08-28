@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
+use App\Data\GunData;
 use App\Models\Gun;
 use App\Models\User;
 use App\Services\UserService;
@@ -21,15 +24,13 @@ class GunService {
     }
 
     public function addGun(
-        $gunData,
+        GunData $gunData,
     ) {
         $inventory = $this->userService->getInventory();
 
         $gun = Gun::create([
             'inventory_id' => $inventory->id,
-            'name' => $gunData['name'],
-            'caliber' => $gunData['caliber'],
-            'serial_number' => $gunData['serial_number']
+            ...$gunData->toArray()
         ]);
 
         return [
@@ -61,14 +62,9 @@ class GunService {
         ];
     }
 
-    public function updateGun(int $gunId, $newData) {
+    public function updateGun(int $gunId, GunData $gunData) {
         $gun = Gun::where('id', $gunId)->first();
-
-        $gun->update([
-            'caliber' => $newData['caliber'],
-            'name' => $newData['name'],
-            'serial_number' => $newData['serial_number']
-        ]);
+        $gun->update($gunData->toArray());
 
         return [
             'id' => $gun->id,
