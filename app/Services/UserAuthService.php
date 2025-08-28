@@ -16,6 +16,7 @@ class UserAuthService {
 
         Inventory::create([
             'user_id' => $user->id,
+            'name' => 'default'
         ]);
 
         $token = $user->createToken('token')->plainTextToken;
