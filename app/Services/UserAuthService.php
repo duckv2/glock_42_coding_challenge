@@ -1,17 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
+use App\Data\SignupData;
 use App\Models\Inventory;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
 class UserAuthService {
-    public function signUp($userData) {
+    public function signUp(SignupData $signupData) {
         $user = User::create([
-            'email' => $userData['email'],
-            'name' => $userData['name'],
-            'password' => bcrypt($userData['password']),
+            'email' => $signupData->email,
+            'name' => $signupData->name,
+            'password' => bcrypt($signupData->password),
         ]);
 
         Inventory::create([
@@ -24,7 +27,7 @@ class UserAuthService {
         return [
             'user' => [
                 'id' => $user->id,
-                'name' => $user->email
+                'name' => $user->name
             ],
             'token' => $token,
         ];

@@ -6,9 +6,10 @@ namespace App\Data;
 
 use Spatie\LaravelData\Data;
 
-class InventoryData extends Data
+class LoginData extends Data
 {
     public function __construct(
-        public string $name,
+        public string $email,
+        public string $password,
     ) {}
 }
