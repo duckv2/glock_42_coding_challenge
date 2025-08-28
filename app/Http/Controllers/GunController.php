@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Data\GunData;
 use App\Services\GunService;
+use App\Services\InventoryService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -20,6 +21,14 @@ class GunController
 
     public function store(GunData $gunData)
     {
+        $inventoryService = new InventoryService(Auth::user());
+        if (!$inventoryService->userHasInventory($gunData->inventory_id)) {
+            return [
+                'code' => 404,
+                'message' => 'Invalid inventory id'
+            ];
+        }
+
         $gunService = new GunService(Auth::user());
         $gunResponse = $gunService->addGun($gunData);
 
@@ -42,6 +51,14 @@ class GunController
 
     public function update(GunData $gunData, int $id)
     {
+        $inventoryService = new InventoryService(Auth::user());
+        if (!$inventoryService->userHasInventory($gunData->inventory_id)) {
+            return [
+                'code' => 404,
+                'message' => 'Invalid inventory id'
+            ];
+        }
+
         $gunService = new GunService(Auth::user());
 
         if ($gunService->userHasGun($id)) {
