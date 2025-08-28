@@ -2,16 +2,35 @@
 
 declare(strict_types=1);
 
+namespace App\Services;
+
+use App\Data\InventoryData;
 use App\Models\Inventory;
 use App\Models\User;
 
 class InventoryService {
     public function __construct(private User $user) {}
 
-    public function createInventory(string $name) {
+    public function getUserInventories() {
+        $inventories = Inventory::where('user_id', $this->user->id)->get();
+        return [...$inventories];
+    }
+
+    public function getUserInventory(int $id) {
+        $inventory = Inventory::find($id);
+
+        return [
+            'id' => $inventory->id,
+            'name' => $inventory->name,
+            'created_at' => $inventory->created_at,
+            'updated_at' => $inventory->updated_at,
+        ];
+    }
+
+    public function createInventory(InventoryData $inventoryData) {
         $inventory = Inventory::create([
             'user_id' => $this->user->id,
-            'name' => $name
+            'name' => $inventoryData->name,
         ]);
 
         return [
@@ -32,13 +51,11 @@ class InventoryService {
         return $inventory && $this->userOwnsInventory($inventory);
     }
 
-    // The only thing that can currently be updated is
-    // the inventory's name
-    public function updateInventory(int $id, string $name) {
+    public function updateInventory(int $id, InventoryData $inventoryData) {
         $inventory = Inventory::find($id);
 
         $inventory->update([
-            'name' => $name,
+            'name' => $inventoryData->name,
         ]);
 
         return [
