@@ -12,7 +12,7 @@ Route::post('/login', [UserController::class, 'login']);
 Route::post('/gun', [GunController::class, 'store'])->middleware('auth:sanctum');
 Route::get('/gun', [GunController::class, 'index'])->middleware('auth:sanctum');
 Route::get('/gun/{id}', [GunController::class, 'show'])->middleware('auth:sanctum');
-Route::put('/gun/{id}', [GunController::class, 'update'])->middleware('auth:sanctum');
+Route::patch('/gun/{id}', [GunController::class, 'update'])->middleware('auth:sanctum');
 Route::delete('/gun/{id}', [GunController::class, 'destroy'])->middleware('auth:sanctum');
 
 

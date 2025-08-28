@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Data\GunData;
+use App\Data\UpdateGunData;
 use App\Models\Gun;
 use App\Models\Inventory;
 use App\Models\User;
@@ -91,11 +92,12 @@ class GunService {
         ];
     }
 
-    public function updateGun(int $gunId, GunData $gunData) {
+    public function updateGun(int $gunId, UpdateGunData $gunData) {
         $gun = Gun::where('id', $gunId)->first();
-        $gun->update($gunData->toArray());
 
-        $inventory = Inventory::find($gunData->inventory_id);
+        $gun->update(array_filter($gunData->toArray()));
+
+        $inventory = Inventory::find($gun->inventory_id);
 
         return [
             'id' => $gun->id,

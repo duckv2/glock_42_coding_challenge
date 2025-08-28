@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Data\GunData;
+use App\Data\UpdateGunData;
 use App\Services\GunService;
 use App\Services\InventoryService;
 use Illuminate\Http\Request;
@@ -49,16 +50,8 @@ class GunController
         ]);
     }
 
-    public function update(GunData $gunData, int $id)
+    public function update(UpdateGunData $gunData, int $id)
     {
-        $inventoryService = new InventoryService(Auth::user());
-        if (!$inventoryService->userHasInventory($gunData->inventory_id)) {
-            return [
-                'code' => 404,
-                'message' => 'Invalid inventory id'
-            ];
-        }
-
         $gunService = new GunService(Auth::user());
 
         if ($gunService->userHasGun($id)) {
