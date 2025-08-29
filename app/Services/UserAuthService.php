@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Data\SignupData;
-use App\Models\Inventory;
+use App\Events\UserSignup;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
@@ -17,10 +17,7 @@ class UserAuthService {
             'password' => bcrypt($signupData->password),
         ]);
 
-        Inventory::create([
-            'user_id' => $user->id,
-            'name' => 'default'
-        ]);
+        UserSignup::dispatch($user);
 
         $token = $user->createToken('token')->plainTextToken;
 
